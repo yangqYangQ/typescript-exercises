@@ -65,7 +65,7 @@ const persons: Person[] = [
 
 function logPerson(person: Person) {
     let additionalInformation: string;
-    if (person.role) {
+    if ('role' in person) {   //也可以使用类型断言
         additionalInformation = person.role;
     } else {
         additionalInformation = person.occupation;
