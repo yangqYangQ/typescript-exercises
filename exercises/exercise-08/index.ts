@@ -54,16 +54,27 @@ interface Admin {
 type Person = User | Admin;
 
 const admins: Admin[] = [
-    { type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator' },
-    { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' }
+    {type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator'},
+    {type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver'}
 ];
 
 const users: User[] = [
-    { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
-    { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' }
+    {type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep'},
+    {type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut'}
 ];
 
-type AdminsApiResponse = (
+type ApiResponse<T> = (
+    {
+        status: 'success',
+        data: T
+    } |
+    {
+        status: 'error',
+        error: string
+    }
+    )
+
+/*type AdminsApiResponse = (
     {
         status: 'success';
         data: Admin[];
@@ -72,16 +83,16 @@ type AdminsApiResponse = (
         status: 'error';
         error: string;
     }
-);
+    );*/
 
-function requestAdmins(callback: (response: AdminsApiResponse) => void) {
+function requestAdmins(callback: (response: ApiResponse<Admin[]>) => void) {
     callback({
         status: 'success',
         data: admins
     });
 }
 
-type UsersApiResponse = (
+/*type UsersApiResponse = (
     {
         status: 'success';
         data: User[];
@@ -90,23 +101,23 @@ type UsersApiResponse = (
         status: 'error';
         error: string;
     }
-);
+    );*/
 
-function requestUsers(callback: (response: UsersApiResponse) => void) {
+function requestUsers(callback: (response: ApiResponse<User[]>) => void) {
     callback({
         status: 'success',
         data: users
     });
 }
 
-function requestCurrentServerTime(callback: (response: unknown) => void) {
+function requestCurrentServerTime(callback: (response: ApiResponse<number>) => void) {
     callback({
         status: 'success',
         data: Date.now()
     });
 }
 
-function requestCoffeeMachineQueueLength(callback: (response: unknown) => void) {
+function requestCoffeeMachineQueueLength(callback: (response: ApiResponse<number>) => void) {
     callback({
         status: 'error',
         error: 'Numeric value has exceeded Number.MAX_SAFE_INTEGER.'
@@ -168,7 +179,7 @@ function startTheApp(callback: (error: Error | null) => void) {
 startTheApp((e: Error | null) => {
     console.log();
     if (e) {
-        console.log(`Error: "${e.message}", but it's fine, sometimes errors are inevitable.`)
+        console.log(`Error: "${e.message}", but it's fine, sometimes errors are inevitable.`);
     } else {
         console.log('Success!');
     }
