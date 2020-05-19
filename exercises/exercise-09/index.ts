@@ -51,13 +51,13 @@ interface Admin {
 type Person = User | Admin;
 
 const admins: Admin[] = [
-    { type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator' },
-    { type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver' }
+    {type: 'admin', name: 'Jane Doe', age: 32, role: 'Administrator'},
+    {type: 'admin', name: 'Bruce Willis', age: 64, role: 'World saver'}
 ];
 
 const users: User[] = [
-    { type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep' },
-    { type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut' }
+    {type: 'user', name: 'Max Mustermann', age: 25, occupation: 'Chimney sweep'},
+    {type: 'user', name: 'Kate Müller', age: 23, occupation: 'Astronaut'}
 ];
 
 type ApiResponse<T> = (
@@ -69,10 +69,20 @@ type ApiResponse<T> = (
         status: 'error';
         error: string;
     }
-);
+    );
+type PromisifyOldFunctionDefinition<T> = (callback: (response: ApiResponse<T>) => void) => void;
+type PromiseNewFunctionDefinition<T> = () => Promise<T>;
 
-function promisify(arg: unknown): unknown {
-    return null;
+function promisify<T>(oldFunction: PromisifyOldFunctionDefinition<T>): PromiseNewFunctionDefinition<T> {
+    return () => new Promise((resolve, reject) => {
+        oldFunction((reponse) => {
+            if (reponse.status === 'success') {
+                return resolve(reponse.data);
+            } else {
+                return reject(new Error(reponse.error));
+            }
+        });
+    });
 }
 
 const oldApi = {
